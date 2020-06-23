@@ -66,7 +66,7 @@ export interface ListProps<T> extends React.HTMLAttributes<any> {
   disabled?: boolean;
   /** Set `false` will always use real scroll instead of virtual one */
   virtual?: boolean;
-
+  maxWidth?: number;
   /** When `disabled`, trigger if changed item not render. */
   onSkipRender?: () => void;
   onScroll?: React.UIEventHandler<HTMLElement>;
@@ -736,12 +736,13 @@ class List<T = any> extends React.Component<ListProps<T>, ListState<T>> {
       return React.cloneElement(node, {
         key: eleKey,
         ref: (ele: HTMLElement) => {
-          const divWidth = this.listRef.current && this.listRef.current.getBoundingClientRect().width;
+          const divWidth =
+            this.listRef.current && this.listRef.current.getBoundingClientRect().width;
           const rectwidth = (ele && ele.getBoundingClientRect().width) || 0;
-          if(divWidth > this.maxWidth){
+          if (divWidth > this.maxWidth) {
             this.maxWidth = divWidth;
           }
-          if(rectwidth > this.maxWidth){
+          if (rectwidth > this.maxWidth) {
             this.maxWidth = rectwidth;
           }
           this.itemElements[eleKey] = ele;
@@ -791,7 +792,7 @@ class List<T = any> extends React.Component<ListProps<T>, ListState<T>> {
           onScroll={this.onRawScroll}
           ref={this.listRef}
         >
-          <Filler prefixCls={prefixCls} height={height}>
+          <Filler prefixCls={prefixCls} height={height} maxWidth={this.maxWidth}>
             {this.renderChildren(
               shouldVirtual ? data.slice(0, Math.ceil(height / itemHeight)) : data,
               0,
