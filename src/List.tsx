@@ -145,6 +145,8 @@ class List<T = any> extends React.Component<ListProps<T>, ListState<T>> {
    */
   cachedProps: Partial<ListProps<T>>;
 
+  maxWidth: number;
+
   /**
    * Lock scroll process with `onScroll` event.
    * This is used for `data` length change and `scrollTop` restore
@@ -153,9 +155,9 @@ class List<T = any> extends React.Component<ListProps<T>, ListState<T>> {
 
   constructor(props: ListProps<T>) {
     super(props);
+    this.maxWidth = 0;
 
     this.cachedProps = props;
-
     this.state = {
       status: 'NONE',
       scrollTop: null,
@@ -730,11 +732,18 @@ class List<T = any> extends React.Component<ListProps<T>, ListState<T>> {
         style: status === 'MEASURE_START' ? { visibility: 'hidden' } : {},
       }) as React.ReactElement;
       const eleKey = this.getIndexKey(eleIndex);
-
       // Pass `key` and `ref` for internal measure
       return React.cloneElement(node, {
         key: eleKey,
         ref: (ele: HTMLElement) => {
+          const divWidth = this.listRef.current && this.listRef.current.getBoundingClientRect().width;
+          const rectwidth = (ele && ele.getBoundingClientRect().width) || 0;
+          if(divWidth > this.maxWidth){
+            this.maxWidth = divWidth;
+          }
+          if(rectwidth > this.maxWidth){
+            this.maxWidth = rectwidth;
+          }
           this.itemElements[eleKey] = ele;
         },
       });
@@ -815,6 +824,7 @@ class List<T = any> extends React.Component<ListProps<T>, ListState<T>> {
           prefixCls={prefixCls}
           height={contentHeight}
           offset={status === 'MEASURE_DONE' ? startItemTop : 0}
+          maxWidth={this.maxWidth}
         >
           {this.renderChildren(data.slice(startIndex, endIndex + 1), startIndex, children)}
         </Filler>

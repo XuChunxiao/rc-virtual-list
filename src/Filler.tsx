@@ -7,7 +7,7 @@ interface FillerProps {
   height: number;
   /** Set offset of visible items. Should be the top of start item position */
   offset?: number;
-
+  maxWidth : number;
   children: React.ReactNode;
 }
 
@@ -19,6 +19,7 @@ const Filler: React.FC<FillerProps> = ({
   offset,
   children,
   prefixCls,
+  maxWidth,
 }): React.ReactElement => {
   let outerStyle: React.CSSProperties = {};
 
@@ -28,15 +29,17 @@ const Filler: React.FC<FillerProps> = ({
   };
 
   if (offset !== undefined) {
-    outerStyle = { height, position: 'relative', overflow: 'hidden' };
+    outerStyle = { height, position: 'relative', overflow: 'hidden',
+    width: maxWidth 
+  };
 
     innerStyle = {
       ...innerStyle,
       transform: `translateY(${offset}px)`,
       position: 'absolute',
-      left: 0,
-      right: 0,
-      top: 0,
+      // left: 0,
+      // right: 0,
+      // top: 0,
     };
   }
 
